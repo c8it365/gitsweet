@@ -1,180 +1,163 @@
 #!/bin/bash -eu
 
-# whiptail が存在するか
-type whiptail > /dev/null 2>&1
+# i18n 国際化対応
+declare -A i18n
+case $LANG in
+  'C' )
+    i18n=(
+    # <autosort>
+    [commandGitNotFound]='commandGitNotFound'
+    [commandWhiptailNotFound]='commandWhiptailNotFound'
+    [gitNotExist]='gitNotExist'
+    [mainMenuExit]='mainMenuExit'
+    [mainMenuGitAddAllFile]='mainMenuGitAddAllFile'
+    [mainMenuGitAddFile]='mainMenuGitAddFile'
+    [mainMenuGitAllClean]='mainMenuGitAllClean'
+    [mainMenuGitClone]='mainMenuGitClone'
+    [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
+    [mainMenuGitCommitFile]='mainMenuGitCommitFile'
+    [mainMenuGitInit]='mainMenuGitInit'
+    [mainMenuGitPull]='mainMenuGitPull'
+    [mainMenuGitPush]='mainMenuGitPush'
+    [mainMenuGitRebase]='mainMenuGitRebase'
+    [mainMenuGitResetAllFile]='mainMenuGitResetAllFile'
+    [mainMenuGitResetFile]='mainMenuGitResetFile'
+    [mainMenuRemoveGit]='mainMenuRemoveGit'
+    [mainMenuShowGitStatus]='mainMenuShowGitStatus'
+    [mainMenuViewGitLog]='mainMenuViewGitLog'
+    [mainMenu]='mainMenu'
+    # </autosort>
+    ) ;;
 
-# whiptail のエイリアス
-w=whiptail
+  'ja_JP.UTF-8' )
+    i18n=(
+    # <autosort>
+    [commandGitNotFound]='コマンドが見つかりません: git'
+    [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
+    [gitNotExist]='".git/" が存在しません'
+    [mainMenuExit]='GitSweet を終了する'
+    [mainMenuGitAddAllFile]='すべてのファイルをステージに追加 (git add --all)'
+    [mainMenuGitAddFile]='ファイルをステージに追加 (git add)'
+    [mainMenuGitAllClean]='ローカルリポジトリをクリーン (git clean)'
+    [mainMenuGitClone]='リポジトリをクローン (git clone)'
+    [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
+    [mainMenuGitCommitFile]='ファイルをコミット (git commit -m)'
+    [mainMenuGitInit]='ローカルリポジトリを作成 (git init)'
+    [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
+    [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
+    [mainMenuGitRebase]='前回のコミットを編集 (git rebase -i)'
+    [mainMenuGitResetAllFile]='すべてのファイルをリセット (git reset)'
+    [mainMenuGitResetFile]='ファイルをリセット (git reset)'
+    [mainMenuRemoveGit]='ローカルリポジトリを削除 (rm -rf .git/)'
+    [mainMenuShowGitStatus]='ステータスを表示 (git status)'
+    [mainMenuViewGitLog]='ログを見る (git log)'
+    [mainMenu]='GitSweet | メインメニュー'
+    # </autosort>
+    ) ;;
 
-while :; do
-  # メインメニュー
-  mainmenu=$($w \
-    --menu 'GitSweet | メインメニュー' \
+  * )
+    i18n=(
+    # <autosort>
+    [commandGitNotFound]='Command not found: git'
+    [commandWhiptailNotFound]='Command not found: whiptail'
+    [gitNotExist]='".git/" not exist'
+    [mainMenuExit]='Exit GitSweet'
+    [mainMenuGitAddAllFile]='Add all file to stage (git add --all)'
+    [mainMenuGitAddFile]='Add file to stage (git add)'
+    [mainMenuGitAllClean]='Clean repository (git clean)'
+    [mainMenuGitClone]='Clone repository (git clone)'
+    [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
+    [mainMenuGitCommitFile]='Commit file (git commit -m)'
+    [mainMenuGitInit]='Create local repository (git init)'
+    [mainMenuGitPull]='Pull from remote repository (git pull)'
+    [mainMenuGitPush]='Push to remote repository (git push)'
+    [mainMenuGitRebase]='Edit last commit (git rebase -i)'
+    [mainMenuGitResetAllFile]='Reset all file (git reset)'
+    [mainMenuGitResetFile]='Reset file (git reset)'
+    [mainMenuRemoveGit]='Remove local repository (rm -rf .git/)'
+    [mainMenuShowGitStatus]='Show status (git status)'
+    [mainMenuViewGitLog]='View logs (git log)'
+    [mainMenu]='GitSweet | Main menu'
+    # </autosort>
+    ) ;;
+esac
+
+# コマンド whiptail が存在するか
+function isWhiptailCommand() {
+  if !(type whiptail > /dev/null 2>&1); then
+    echo "${i18n['commandWhiptailNotFound']}"
+    return 255
+  fi
+}
+
+# メインメニューを表示
+function showMainMenu() {
+  local menulist=(
+  1 "${i18n['mainMenuShowGitStatus']}"
+  2 "${i18n['mainMenuGitAddFile']}"
+  3 "${i18n['mainMenuGitAddAllFile']}"
+  4 "${i18n['mainMenuGitCommitFile']}"
+  5 "${i18n['mainMenuGitCommitAllFile']}"
+  6 "${i18n['mainMenuGitPush']}"
+  7 "${i18n['mainMenuGitPull']}"
+  8 "${i18n['mainMenuGitResetFile']}"
+  9 "${i18n['mainMenuGitResetAllFile']}"
+  10 "${i18n['mainMenuGitAllClean']}"
+  11 "${i18n['mainMenuGitInit']}"
+  12 "${i18n['mainMenuGitClone']}"
+  13 "${i18n['mainMenuRemoveGit']}"
+  14 "${i18n['mainMenuGitRebase']}"
+  15 "${i18n['mainMenuViewGitLog']}"
+  16 "${i18n['mainMenuExit']}"
+  )
+  local menu=$(whiptail \
+    --menu "${i18n['mainMenu']}" \
     30 90 20 \
-    1 'ステータスを見る (git status)' \
-    2 'ファイルをステージに追加 (git add)' \
-    3 'すべてのファイルをステージに追加 (git add --all)' \
-    4 'ファイルをコミット (git commit -m)' \
-    5 'すべてのファイルをコミット (git commit -m)' \
-    6 'リモートリポジトリにプッシュ (git push)' \
-    7 'リモートリポジトリからプル (git pull)' \
-    8 'ローカルリポジトリを作成 (git init)' \
-    9 'ローカルリポジトリを削除 (rm -rf .git)' \
-    10 '前回のコミットを編集 (git rebase -i)' \
-    11 'ログを見る (git log)' \
-    12 'GitSweet を終了する' \
-    3>&1 1>&2 2>&3)
+    "${menulist[@]}" 2>&1 > /dev/tty)
+  echo $menu
+}
 
-  case $mainmenu in
-    1 )
-      $w \
-        --msgbox "$(git status 2>&1)" \
-        30 90 ;;
+# コマンド git が存在するか
+function isGitCommand() {
+  if !(type git > /dev/null 2>&1); then
+    whiptail \
+      --msgbox "${i18n['commandGitNotFound']}" \
+      30 90
+    return 255
+  fi
+}
 
-    2 )
-      i=0
-      s=65 # ASCII "A"
-      for f in $(git ls-files --others --exclude-standard); do
-        # 8進数からタグに変換
-        files[i]=$(echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
-        files[i+1]="$f"
-        ((i+=2))
-        ((s++))
-      done
-      a=$($w \
-        --menu 'ステージに追加するファイルを選択' \
-        30 90 20 \
-        "${files[@]}" \
-        2>&1 > /dev/tty)
-      p=${files[(( index = 2 * ( $( printf "%d" "'$a" ) - 65 ) + 1 ))]}
-      $w \
-        --msgbox "$(git add $p 2>&1)" \
-        30 90 ;;
+# ディレクトリ ".git/" が存在するか
+function isExistGit() {
+  if [ ! -d .git ]; then
+    whiptail \
+      --msgbox "${i18n['gitNotExist']}" \
+      30 90
+  fi
+}
 
-    3 )
-      $w \
-        --msgbox "$(git add --all 2>&1)" \
-        30 90 ;;
+# メインメニューから抜ける
+function exitMainMenu() {
+  exit
+}
 
-    4 )
-      i=0
-      s=65 # ASCII "A"
-      for f in $(git ls-files --modified); do
-        # 8進数からタグに変換
-        files[i]=$(echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
-        files[i+1]="$f"
-        ((i+=2))
-        ((s++))
-      done
-      a=$($w \
-        --menu 'コミットするファイルを選択' \
-        30 90 20 \
-        "${files[@]}" \
-        2>&1 > /dev/tty)
-      t=$($w \
-        --inputbox 'コミットメッセージを入力' \
-        30 90 \
-        2>&1 > /dev/tty)
-      p=${files[(( index = 2 * ( $( printf "%d" "'$a" ) - 65 ) + 1 ))]}
-      $w \
-        --msgbox "$(git commit -m "$t" -- $p 2>&1)" \
-        30 90 ;;
+# git status を表示
+function showGitStatus() {
+  isExistGit
+}
 
-    5 )
-      t=$($w \
-        --inputbox 'コミットメッセージを入力' \
-        30 90 \
-        2>&1 > /dev/tty)
-      echo "$t"
-      $w \
-        --msgbox "$(git commit -m "$t" 2>&1)" \
-        30 90 ;;
+function main() {
+  isWhiptailCommand
+  isGitCommand
+  while :; do
+    case $(showMainMenu) in
+      1 )
+        showGitStatus ;;
 
-    6 )
-      a=$($w \
-        --yesno 'リモートリポジトリにプッシュしますか？' \
-        30 90 \
-        2>&1 > /dev/tty; echo $?)
-      case $a in
-        0 )
-          $w \
-            --msgbox "$(git push 2>&1)" \
-            30 90 ;;
+      16 )
+        exitMainMenu ;;
+    esac
+  done
+}
 
-        1 )
-          $w \
-            --msgbox 'リモートリポジトリへのプッシュを中止しました' \
-            30 90 ;;
-
-        * )
-          echo $a ;;
-      esac ;;
-
-    7 )
-      a=$($w \
-        --yesno 'リモートリポジトリからプルしますか？' \
-        30 90 \
-        2>&1 > /dev/tty; echo $?)
-      case $a in
-        0 )
-          $w \
-            --msgbox "$(git pull 2>&1)" \
-            30 90 ;;
-
-        1 )
-          $w \
-            --msgbox 'リモートリポジトリからのプルを中止しました' \
-            30 90 ;;
-
-        * )
-          echo $a ;;
-      esac ;;
-
-    8 )
-      $w \
-        --msgbox "$(git init 2>&1)" \
-        30 90 ;;
-
-    9 )
-      # ディレクトリ ".git" が存在するなら、中止
-      if [ ! -d .git ]; then
-        $w \
-          --msgbox "リポジトリではありません: $PWD" \
-          30 90
-        continue
-      fi
-
-      a=$($w \
-        --yesno '本当にローカルリポジトリを削除しますか？' \
-        30 90 \
-        2>&1 > /dev/tty; echo $?)
-      case $a in
-        0 )
-          rm -rf .git
-          $w \
-            --msgbox 'ローカルリポジトリを削除しました' \
-            30 90 ;;
-
-        1 )
-          $w \
-            --msgbox 'ローカルリポジトリの削除を中止しました' \
-            30 90 ;;
-
-        * )
-          echo $a ;;
-      esac ;;
-
-    11 )
-      $w \
-        --msgbox "$(git log 2>&1)" \
-        30 90 ;;
-
-    12 )
-      break ;;
-
-    * )
-      echo $mainmenu ;;
-  esac
-done
-
-# 参考: https://stackoverflow.com/questions/1562666/bash-scripts-whiptail-file-select
+main
