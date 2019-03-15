@@ -20,7 +20,7 @@ case $LANG in
     [mainMenuGitClone]='mainMenuGitClone'
     [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
     [mainMenuGitCommitFile]='mainMenuGitCommitFile'
-    [mainMenuGitInit]='mainMenuGitInit'
+    [mainMenuGitInitialize]='mainMenuGitInitialize'
     [mainMenuGitPull]='mainMenuGitPull'
     [mainMenuGitPush]='mainMenuGitPush'
     [mainMenuGitRebase]='mainMenuGitRebase'
@@ -52,7 +52,7 @@ case $LANG in
     [mainMenuGitClone]='リポジトリをクローン (git clone)'
     [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
     [mainMenuGitCommitFile]='ファイルをコミット (git commit -m)'
-    [mainMenuGitInit]='ローカルリポジトリを作成 (git init)'
+    [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
     [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
     [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
     [mainMenuGitRebase]='前回のコミットを編集 (git rebase -i)'
@@ -84,7 +84,7 @@ case $LANG in
     [mainMenuGitClone]='Clone repository (git clone)'
     [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
     [mainMenuGitCommitFile]='Commit file (git commit -m)'
-    [mainMenuGitInit]='Create local repository (git init)'
+    [mainMenuGitInitialize]='Create local repository (git init)'
     [mainMenuGitPull]='Pull from remote repository (git pull)'
     [mainMenuGitPush]='Push to remote repository (git push)'
     [mainMenuGitRebase]='Edit last commit (git rebase -i)'
@@ -121,7 +121,7 @@ function showMainMenu() {
   8 "${i18n['mainMenuGitResetFile']}"
   9 "${i18n['mainMenuGitResetAllFile']}"
   10 "${i18n['mainMenuGitAllClean']}"
-  11 "${i18n['mainMenuGitInit']}"
+  11 "${i18n['mainMenuGitInitialize']}"
   12 "${i18n['mainMenuGitClone']}"
   13 "${i18n['mainMenuremoveRepository']}"
   14 "${i18n['mainMenuGitRebase']}"
