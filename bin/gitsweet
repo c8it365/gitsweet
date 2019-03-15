@@ -301,6 +301,10 @@ function commitAllFile() {
 function main() {
   isWhiptailCommand
   isGitCommand
+  # whiptail の色
+  export NEWT_COLORS='
+    root=,magenta
+  '
   while :; do
     case $(showMainMenu) in
       1 )
