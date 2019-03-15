@@ -3,15 +3,19 @@
 # i18n 国際化対応
 declare -A i18n
 case $LANG in
-  'C' )
+  'DEBUG' )
     i18n=(
     # <autosort>
+    [addFileToStageSelectFiles]='addFileToStageSelectFiles'
     [commandGitNotFound]='commandGitNotFound'
     [commandWhiptailNotFound]='commandWhiptailNotFound'
+    [commitFileCommitMessage]='commitFileCommitMessage'
+    [commitFileSelectFiles]='commitFileSelectFiles'
+    [fileNotFound]='fileNotFound'
     [gitNotExist]='gitNotExist'
     [mainMenuExit]='mainMenuExit'
-    [mainMenuGitAddAllFile]='mainMenuGitAddAllFile'
-    [mainMenuGitAddFile]='mainMenuGitAddFile'
+    [mainMenuGitAddAllFileToStage]='mainMenuGitAddAllFileToStage'
+    [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
     [mainMenuGitAllClean]='mainMenuGitAllClean'
     [mainMenuGitClone]='mainMenuGitClone'
     [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
@@ -22,22 +26,28 @@ case $LANG in
     [mainMenuGitRebase]='mainMenuGitRebase'
     [mainMenuGitResetAllFile]='mainMenuGitResetAllFile'
     [mainMenuGitResetFile]='mainMenuGitResetFile'
-    [mainMenuRemoveGit]='mainMenuRemoveGit'
     [mainMenuShowGitStatus]='mainMenuShowGitStatus'
     [mainMenuViewGitLog]='mainMenuViewGitLog'
     [mainMenu]='mainMenu'
+    [mainMenuremoveRepository]='mainMenuremoveRepository'
+    [removeRepositorySuccess]='removeRepositorySuccess'
+    [removeRepositoryYesNo]='removeRepositoryYesNo'
     # </autosort>
     ) ;;
 
   'ja_JP.UTF-8' )
     i18n=(
     # <autosort>
+    [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
     [commandGitNotFound]='コマンドが見つかりません: git'
     [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
+    [commitFileCommitMessage]='コミットメッセージを入力'
+    [commitFileSelectFiles]='コミットするファイルを選択'
+    [fileNotFound]='ファイルが見つかりません'
     [gitNotExist]='".git/" が存在しません'
     [mainMenuExit]='GitSweet を終了する'
-    [mainMenuGitAddAllFile]='すべてのファイルをステージに追加 (git add --all)'
-    [mainMenuGitAddFile]='ファイルをステージに追加 (git add)'
+    [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
+    [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
     [mainMenuGitAllClean]='ローカルリポジトリをクリーン (git clean)'
     [mainMenuGitClone]='リポジトリをクローン (git clone)'
     [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
@@ -48,22 +58,28 @@ case $LANG in
     [mainMenuGitRebase]='前回のコミットを編集 (git rebase -i)'
     [mainMenuGitResetAllFile]='すべてのファイルをリセット (git reset)'
     [mainMenuGitResetFile]='ファイルをリセット (git reset)'
-    [mainMenuRemoveGit]='ローカルリポジトリを削除 (rm -rf .git/)'
     [mainMenuShowGitStatus]='ステータスを表示 (git status)'
     [mainMenuViewGitLog]='ログを見る (git log)'
     [mainMenu]='GitSweet | メインメニュー'
+    [mainMenuremoveRepository]='ローカルリポジトリを削除 (rm -rf .git/)'
+    [removeRepositorySuccess]='リポジトリを削除しました'
+    [removeRepositoryYesNo]='リポジトリを削除しますか？'
     # </autosort>
     ) ;;
 
   * )
     i18n=(
     # <autosort>
+    [addFileToStageSelectFiles]='Select file to add to stage'
     [commandGitNotFound]='Command not found: git'
     [commandWhiptailNotFound]='Command not found: whiptail'
+    [commitFileCommitMessage]='Enter commit message'
+    [commitFileSelectFiles]='Select file to commit'
+    [fileNotFound]='File not found'
     [gitNotExist]='".git/" not exist'
     [mainMenuExit]='Exit GitSweet'
-    [mainMenuGitAddAllFile]='Add all file to stage (git add --all)'
-    [mainMenuGitAddFile]='Add file to stage (git add)'
+    [mainMenuGitAddAllFileToStage]='Add all file to stage (git add --all)'
+    [mainMenuGitAddFileToStage]='Add file to stage (git add)'
     [mainMenuGitAllClean]='Clean repository (git clean)'
     [mainMenuGitClone]='Clone repository (git clone)'
     [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
@@ -74,10 +90,12 @@ case $LANG in
     [mainMenuGitRebase]='Edit last commit (git rebase -i)'
     [mainMenuGitResetAllFile]='Reset all file (git reset)'
     [mainMenuGitResetFile]='Reset file (git reset)'
-    [mainMenuRemoveGit]='Remove local repository (rm -rf .git/)'
     [mainMenuShowGitStatus]='Show status (git status)'
     [mainMenuViewGitLog]='View logs (git log)'
     [mainMenu]='GitSweet | Main menu'
+    [mainMenuremoveRepository]='Remove local repository (rm -rf .git/)'
+    [removeRepositorySuccess]='Removed repository'
+    [removeRepositoryYesNo]='Want to remove repository?'
     # </autosort>
     ) ;;
 esac
@@ -94,8 +112,8 @@ function isWhiptailCommand() {
 function showMainMenu() {
   local menulist=(
   1 "${i18n['mainMenuShowGitStatus']}"
-  2 "${i18n['mainMenuGitAddFile']}"
-  3 "${i18n['mainMenuGitAddAllFile']}"
+  2 "${i18n['mainMenuGitAddFileToStage']}"
+  3 "${i18n['mainMenuGitAddAllFileToStage']}"
   4 "${i18n['mainMenuGitCommitFile']}"
   5 "${i18n['mainMenuGitCommitAllFile']}"
   6 "${i18n['mainMenuGitPush']}"
@@ -105,23 +123,24 @@ function showMainMenu() {
   10 "${i18n['mainMenuGitAllClean']}"
   11 "${i18n['mainMenuGitInit']}"
   12 "${i18n['mainMenuGitClone']}"
-  13 "${i18n['mainMenuRemoveGit']}"
+  13 "${i18n['mainMenuremoveRepository']}"
   14 "${i18n['mainMenuGitRebase']}"
   15 "${i18n['mainMenuViewGitLog']}"
   16 "${i18n['mainMenuExit']}"
   )
-  local menu=$(whiptail \
-    --menu "${i18n['mainMenu']}" \
+  local menu=$(whiptail --menu \
+    "${i18n['mainMenu']}" \
     30 90 20 \
-    "${menulist[@]}" 2>&1 > /dev/tty)
-  echo $menu
+    "${menulist[@]}" \
+    2>&1 > /dev/tty)
+  LANG=C echo -n $menu
 }
 
 # コマンド git が存在するか
 function isGitCommand() {
   if !(type git > /dev/null 2>&1); then
-    whiptail \
-      --msgbox "${i18n['commandGitNotFound']}" \
+    whiptail --msgbox \
+      "${i18n['commandGitNotFound']}" \
       30 90
     return 255
   fi
@@ -130,9 +149,10 @@ function isGitCommand() {
 # ディレクトリ ".git/" が存在するか
 function isExistGit() {
   if [ ! -d .git ]; then
-    whiptail \
-      --msgbox "${i18n['gitNotExist']}" \
+    whiptail --msgbox \
+      "${i18n['gitNotExist']}" \
       30 90
+    return 1
   fi
 }
 
@@ -143,7 +163,139 @@ function exitMainMenu() {
 
 # git status を表示
 function showGitStatus() {
-  isExistGit
+  whiptail --msgbox \
+    "$(git status 2>&1)" \
+    30 90
+}
+
+# git log を見る
+function viewGitLog() {
+  whiptail --msgbox \
+    "$(git log 2>&1)" \
+    30 90
+}
+
+# ディレクトリ ".git/" を削除
+function removeRepository() {
+  local yesno=$(whiptail --yesno \
+    "${i18n['removeRepositoryYesNo']}" \
+    30 90 \
+    2>&1 > /dev/tty; LANG=C echo -n $?)
+  if [ $yesno -eq 0 ]; then
+    rm -rvf .git/
+    whiptail --msgbox \
+      "${i18n['removeRepositorySuccess']}" \
+      30 90
+  fi
+}
+
+# ローカルリポジトリを作成
+function initializeRepository() {
+  whiptail --msgbox \
+    "$(git init 2>&1)" \
+    30 90
+}
+
+# リモートリポジトリにプッシュ
+function pushRepository() {
+  whiptail --msgbox \
+    "$(git push 2>&1)" \
+    30 90
+}
+
+# リモートリポジトリからプル
+function pullRepository() {
+  whiptail --msgbox \
+    "$(git pull 2>&1)" \
+    30 90
+}
+
+# ファイルをステージに追加
+function addFileToStage() {
+  local i=0
+  local s=65
+  local f
+  local files
+  local list=$(git ls-files --others --modified --exclude-standard)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  for f in $list; do
+    files[i]=$(LANG=C echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
+    files[i+1]="$f"
+    ((i+=2))
+    ((s++))
+  done
+  local menu=$(whiptail --menu \
+    "${i18n['addFileToStageSelectFiles']}" \
+    30 90 20 \
+    "${files[@]}" \
+    2>&1 > /dev/tty)
+  menu=${files[(( index = 2 * ( $( LANG=C printf "%d" "'$menu" ) - 65 ) + 1 ))]}
+  local command=$(git add $menu 2>&1)
+  if [ ! $? = 0 ]; then
+    whiptail --msgbox \
+      "$command" \
+      30 90
+  fi
+}
+
+# すべてのファイルをステージに追加
+function addAllFileToStage() {
+  local command=$(git add --all 2>&1)
+  if [ ! $? = 0 ]; then
+    whiptail --msgbox \
+      "$command" \
+      30 90
+  fi
+}
+
+# ファイルをコミット
+function commitFile() {
+  local i=0
+  local s=65
+  local f
+  local files
+  local list=$(git ls-files --cached)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  for f in $list; do
+    files[i]=$(LANG=C echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
+    files[i+1]="$f"
+    ((i+=2))
+    ((s++))
+  done
+  local menu=$(whiptail --menu \
+    "${i18n['commitFileSelectFiles']}" \
+    30 90 20 \
+    "${files[@]}" \
+    2>&1 > /dev/tty)
+  menu=${files[(( index = 2 * ( $( LANG=C printf "%d" "'$menu" ) - 65 ) + 1 ))]}
+  local input=$(whiptail --inputbox \
+    "${i18n['commitFileCommitMessage']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  whiptail --msgbox \
+    "$(git commit -m "$input" -- $menu 2>&1)" \
+    30 90
+}
+
+# すべてのファイルをコミット
+function commitAllFile() {
+  local input=$(whiptail --inputbox \
+    "${i18n['commitFileCommitMessage']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  whiptail --msgbox \
+    "$(git commit -m "$input" 2>&1)" \
+    30 90
 }
 
 function main() {
@@ -152,7 +304,43 @@ function main() {
   while :; do
     case $(showMainMenu) in
       1 )
+        isExistGit || continue
         showGitStatus ;;
+
+      2 )
+        isExistGit || continue
+        addFileToStage ;;
+
+      3 )
+        isExistGit || continue
+        addAllFileToStage ;;
+
+      4 )
+        isExistGit || continue
+        commitFile ;;
+
+      5 )
+        isExistGit || continue
+        commitAllFile ;;
+
+      6 )
+        isExistGit || continue
+        pushRepository ;;
+
+      7 )
+        isExistGit || continue
+        pullRepository ;;
+
+      11 )
+        initializeRepository ;;
+
+      13 )
+        isExistGit || continue
+        removeRepository ;;
+
+      15 )
+        isExistGit || continue
+        viewGitLog ;;
 
       16 )
         exitMainMenu ;;
