@@ -274,22 +274,22 @@ function showGitStatus() {
 # メインメニューを表示
 function showMainMenu() {
   local menulist=(
-  1 "${i18n['mainMenuShowGitStatus']}"
-  2 "${i18n['mainMenuGitAddFileToStage']}"
-  3 "${i18n['mainMenuGitAddAllFileToStage']}"
-  4 "${i18n['mainMenuGitCommitFile']}"
-  5 "${i18n['mainMenuGitCommitAllFile']}"
-  6 "${i18n['mainMenuGitPush']}"
-  7 "${i18n['mainMenuGitPull']}"
-  8 "${i18n['mainMenuGitResetFile']}"
-  9 "${i18n['mainMenuGitResetAllFile']}"
-  10 "${i18n['mainMenuGitAllClean']}"
-  11 "${i18n['mainMenuGitInitialize']}"
-  12 "${i18n['mainMenuGitClone']}"
-  13 "${i18n['mainMenuremoveRepository']}"
-  14 "${i18n['mainMenuGitRebase']}"
-  15 "${i18n['mainMenuViewGitLog']}"
-  16 "${i18n['mainMenuExit']}"
+    1  "${i18n['mainMenuShowGitStatus']}"
+    2  "${i18n['mainMenuGitAddFileToStage']}"
+    3  "${i18n['mainMenuGitAddAllFileToStage']}"
+    4  "${i18n['mainMenuGitCommitFile']}"
+    5  "${i18n['mainMenuGitCommitAllFile']}"
+    6  "${i18n['mainMenuGitPush']}"
+    7  "${i18n['mainMenuGitPull']}"
+    8  "${i18n['mainMenuGitResetFile']}"
+    9  "${i18n['mainMenuGitResetAllFile']}"
+    10 "${i18n['mainMenuGitAllClean']}"
+    11 "${i18n['mainMenuGitInitialize']}"
+    12 "${i18n['mainMenuGitClone']}"
+    13 "${i18n['mainMenuremoveRepository']}"
+    14 "${i18n['mainMenuGitRebase']}"
+    15 "${i18n['mainMenuViewGitLog']}"
+    16 "${i18n['mainMenuExit']}"
   )
   local menu=$(whiptail --menu \
     "${i18n['mainMenu']}" \
