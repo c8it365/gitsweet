@@ -108,12 +108,14 @@ esac
 
 # すべてのファイルをステージに追加
 function addAllFileToStage() {
-  local command=$(git add --all 2>&1)
-  if [ ! $? = 0 ]; then
+  local temp=$(mktemp)
+  local command=$(git add --all > $temp 2>&1; LANG=C echo -n $?)
+  if [ $command -ne 0 ]; then
     whiptail --msgbox \
-      "$command" \
+      "$(cat $temp)" \
       30 90
   fi
+  rm $temp
 }
 
 # ファイルをステージに追加
@@ -141,12 +143,14 @@ function addFileToStage() {
     "${files[@]}" \
     2>&1 > /dev/tty)
   menu=${files[(( index = 2 * ( $( LANG=C printf "%d" "'$menu" ) - 65 ) + 1 ))]}
-  local command=$(git add $menu 2>&1)
-  if [ ! $? = 0 ]; then
+  local temp=$(mktemp)
+  local command=$(git add $menu > $temp 2>&1; LANG=C echo -n $?)
+  if [ $command -ne 0 ]; then
     whiptail --msgbox \
-      "$command" \
+      "$(cat $temp)" \
       30 90
   fi
+  rm $temp
 }
 
 # リポジトリをクリーン
