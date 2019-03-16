@@ -298,14 +298,18 @@ function commitAllFile() {
     30 90
 }
 
-function main() {
-  isWhiptailCommand
-  isGitCommand
-  # whiptail の色
+# whiptail の色を変更
+function changeWhiptailColors() {
   export NEWT_COLORS='
     root=,magenta
     entry=white,magenta
   '
+}
+
+function main() {
+  isWhiptailCommand
+  isGitCommand
+  changeWhiptailColors
   while :; do
     case $(showMainMenu) in
       1 )
