@@ -112,7 +112,7 @@ function addAllFileToStage() {
   local command=$(git add --all > $temp 2>&1; LANG=C echo -n $?)
   if [ $command -ne 0 ]; then
     whiptail --msgbox \
-      "$(cat $temp)" \
+      "$(LANG=C cat $temp)" \
       30 90
   fi
   rm $temp
@@ -147,7 +147,7 @@ function addFileToStage() {
   local command=$(git add $menu > $temp 2>&1; LANG=C echo -n $?)
   if [ $command -ne 0 ]; then
     whiptail --msgbox \
-      "$(cat $temp)" \
+      "$(LANG=C cat $temp)" \
       30 90
   fi
   rm $temp
@@ -176,7 +176,7 @@ function cloneRepository() {
   local command=$(git clone "$input" . > $temp 2>&1; LANG=C echo -n $?)
   if [ $command -ne 0 ]; then
     whiptail --msgbox \
-      "$(cat $temp)" \
+      "$(LANG=C cat $temp)" \
       30 90
   fi
   rm $temp
