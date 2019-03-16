@@ -7,6 +7,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='addFileToStageSelectFiles'
+      [addFileToUnstageSelectFiles]='addFileToUnstageSelectFiles'
       [cleanRepositoryYesNo]='cleanRepositoryYesNo'
       [cloneRepositoryInputPath]='cloneRepositoryInputPath'
       [commandGitNotFound]='commandGitNotFound'
@@ -18,6 +19,7 @@ case $LANG in
       [mainMenuExit]='mainMenuExit'
       [mainMenuGitAddAllFileToStage]='mainMenuGitAddAllFileToStage'
       [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
+      [mainMenuGitAddFileToUnstage]='mainMenuGitAddFileToUnstage'
       [mainMenuGitCleanRepository]='mainMenuGitCleanRepository'
       [mainMenuGitClone]='mainMenuGitClone'
       [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
@@ -27,7 +29,6 @@ case $LANG in
       [mainMenuGitPush]='mainMenuGitPush'
       [mainMenuGitRebase]='mainMenuGitRebase'
       [mainMenuGitResetAllFile]='mainMenuGitResetAllFile'
-      [mainMenuGitResetFile]='mainMenuGitResetFile'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
       [mainMenuViewGitLog]='mainMenuViewGitLog'
       [mainMenu]='mainMenu'
@@ -41,6 +42,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
+      [addFileToUnstageSelectFiles]='追加を取り消すファイルを選択'
       [cleanRepositoryYesNo]='本当にリポジトリをクリーンしますか？'
       [cloneRepositoryInputPath]='複製するリポジトリのパスを入力'
       [commandGitNotFound]='コマンドが見つかりません: git'
@@ -52,6 +54,7 @@ case $LANG in
       [mainMenuExit]='GitSweet を終了する'
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
+      [mainMenuGitAddFileToUnstage]='ファイルの追加を取り消す (git reset HEAD)'
       [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
       [mainMenuGitClone]='リポジトリを複製 (git clone)'
       [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
@@ -60,8 +63,7 @@ case $LANG in
       [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
       [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
       [mainMenuGitRebase]='前回のコミットを編集 (git rebase -i)'
-      [mainMenuGitResetAllFile]='すべてのファイルをリセット (git reset)'
-      [mainMenuGitResetFile]='ファイルをリセット (git reset)'
+      [mainMenuGitResetAllFile]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
       [mainMenuViewGitLog]='ログを見る (git log)'
       [mainMenu]='GitSweet | メインメニュー'
@@ -75,6 +77,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='Select file to add to stage'
+      [addFileToUnstageSelectFiles]='Select file to add to unstage'
       [cleanRepositoryYesNo]='Clean repository?'
       [cloneRepositoryInputPath]='Enter the repository path to clone'
       [commandGitNotFound]='Command not found: git'
@@ -94,8 +97,8 @@ case $LANG in
       [mainMenuGitPull]='Pull from remote repository (git pull)'
       [mainMenuGitPush]='Push to remote repository (git push)'
       [mainMenuGitRebase]='Edit last commit (git rebase -i)'
-      [mainMenuGitResetAllFile]='Reset all file (git reset)'
-      [mainMenuGitResetFile]='Reset file (git reset)'
+      [mainMenuGitResetAllFile]='Add all file to unstage (git reset HEAD)'
+      [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
       [mainMenuShowGitStatus]='Show status (git status)'
       [mainMenuViewGitLog]='View logs (git log)'
       [mainMenu]='GitSweet | Main menu'
@@ -116,6 +119,13 @@ function addAllFileToStage() {
       30 90
   fi
   rm $temp
+}
+
+# すべてのファイルの追加を取り消す
+function addAllFileToUnstage() {
+  whiptail --msgbox \
+    "$(git reset HEAD 2>&1)" \
+    30 90
 }
 
 # ファイルをステージに追加
@@ -151,6 +161,36 @@ function addFileToStage() {
       30 90
   fi
   rm $temp
+}
+
+# ファイルの追加を取り消す
+function addFileToUnstage() {
+  local i=0
+  local s=65
+  local f
+  local files
+  local list=$(git diff --name-only --cached)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  for f in $list; do
+    files[i]=$(LANG=C echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
+    files[i+1]="$f"
+    ((i+=2))
+    ((s++))
+  done
+  local menu=$(whiptail --menu \
+    "${i18n['addFileToUnstageSelectFiles']}" \
+    30 90 20 \
+    "${files[@]}" \
+    2>&1 > /dev/tty)
+  menu=${files[(( index = 2 * ( $( LANG=C printf "%d" "'$menu" ) - 65 ) + 1 ))]}
+  whiptail --msgbox \
+    "$(git reset HEAD $menu 2>&1)" \
+    30 90
 }
 
 # リポジトリをクリーン
@@ -320,7 +360,7 @@ function showMainMenu() {
     5  "${i18n['mainMenuGitCommitAllFile']}"
     6  "${i18n['mainMenuGitPush']}"
     7  "${i18n['mainMenuGitPull']}"
-    8  "${i18n['mainMenuGitResetFile']}"
+    8  "${i18n['mainMenuGitAddFileToUnstage']}"
     9  "${i18n['mainMenuGitResetAllFile']}"
     10 "${i18n['mainMenuGitCleanRepository']}"
     11 "${i18n['mainMenuGitInitialize']}"
@@ -379,14 +419,24 @@ function main() {
         isExistGit || continue
         pullRepository ;;
 
+      8 )
+        isExistGit || continue
+        addFileToUnstage ;;
+
+      9 )
+        isExistGit || continue
+        addAllFileToUnstage ;;
+
       10 )
         isExistGit || continue
         cleanRepository ;;
 
       11 )
+        isExistGit && continue
         initializeRepository ;;
 
       12 )
+        isExistGit && continue
         cloneRepository ;;
 
       13 )
