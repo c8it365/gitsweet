@@ -304,6 +304,7 @@ function main() {
   # whiptail の色
   export NEWT_COLORS='
     root=,magenta
+    entry=white,magenta
   '
   while :; do
     case $(showMainMenu) in
