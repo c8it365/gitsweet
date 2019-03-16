@@ -7,6 +7,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='addFileToStageSelectFiles'
+      [cleanRepositoryYesNo]='cleanRepositoryYesNo'
       [commandGitNotFound]='commandGitNotFound'
       [commandWhiptailNotFound]='commandWhiptailNotFound'
       [commitFileCommitMessage]='commitFileCommitMessage'
@@ -16,7 +17,7 @@ case $LANG in
       [mainMenuExit]='mainMenuExit'
       [mainMenuGitAddAllFileToStage]='mainMenuGitAddAllFileToStage'
       [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
-      [mainMenuGitAllClean]='mainMenuGitAllClean'
+      [mainMenuGitCleanRepository]='mainMenuGitCleanRepository'
       [mainMenuGitClone]='mainMenuGitClone'
       [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
       [mainMenuGitCommitFile]='mainMenuGitCommitFile'
@@ -39,6 +40,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
+      [cleanRepositoryYesNo]="本当にリポジトリをクリーンしますか？"
       [commandGitNotFound]='コマンドが見つかりません: git'
       [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
       [commitFileCommitMessage]='コミットメッセージを入力'
@@ -48,7 +50,7 @@ case $LANG in
       [mainMenuExit]='GitSweet を終了する'
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
-      [mainMenuGitAllClean]='ローカルリポジトリをクリーン (git clean)'
+      [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
       [mainMenuGitClone]='リポジトリをクローン (git clone)'
       [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
       [mainMenuGitCommitFile]='ファイルをコミット (git commit -m)'
@@ -63,7 +65,7 @@ case $LANG in
       [mainMenu]='GitSweet | メインメニュー'
       [mainMenuremoveRepository]='ローカルリポジトリを削除 (rm -rf .git/)'
       [removeRepositorySuccess]='リポジトリを削除しました'
-      [removeRepositoryYesNo]='リポジトリを削除しますか？'
+      [removeRepositoryYesNo]='本当にリポジトリを削除しますか？'
       # </autosort>
     ) ;;
 
@@ -71,6 +73,7 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='Select file to add to stage'
+      [cleanRepositoryYesNo]='Clean repository?'
       [commandGitNotFound]='Command not found: git'
       [commandWhiptailNotFound]='Command not found: whiptail'
       [commitFileCommitMessage]='Enter commit message'
@@ -80,7 +83,7 @@ case $LANG in
       [mainMenuExit]='Exit GitSweet'
       [mainMenuGitAddAllFileToStage]='Add all file to stage (git add --all)'
       [mainMenuGitAddFileToStage]='Add file to stage (git add)'
-      [mainMenuGitAllClean]='Clean repository (git clean)'
+      [mainMenuGitCleanRepository]='Clean repository (git clean -df)'
       [mainMenuGitClone]='Clone repository (git clone)'
       [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
       [mainMenuGitCommitFile]='Commit file (git commit -m)'
@@ -139,6 +142,19 @@ function addFileToStage() {
   if [ ! $? = 0 ]; then
     whiptail --msgbox \
       "$command" \
+      30 90
+  fi
+}
+
+# リポジトリをクリーン
+function cleanRepository() {
+  local yesno=$(whiptail --yesno \
+    "${i18n['cleanRepositoryYesNo']}" \
+    30 90 \
+    2>&1 > /dev/tty; LANG=C echo -n $?)
+  if [ $yesno -eq 0 ]; then
+    whiptail --msgbox \
+      "$(git clean -df 2>&1)" \
       30 90
   fi
 }
@@ -283,7 +299,7 @@ function showMainMenu() {
     7  "${i18n['mainMenuGitPull']}"
     8  "${i18n['mainMenuGitResetFile']}"
     9  "${i18n['mainMenuGitResetAllFile']}"
-    10 "${i18n['mainMenuGitAllClean']}"
+    10 "${i18n['mainMenuGitCleanRepository']}"
     11 "${i18n['mainMenuGitInitialize']}"
     12 "${i18n['mainMenuGitClone']}"
     13 "${i18n['mainMenuremoveRepository']}"
@@ -339,6 +355,10 @@ function main() {
       7 )
         isExistGit || continue
         pullRepository ;;
+
+      10 )
+        isExistGit || continue
+        cleanRepository ;;
 
       11 )
         initializeRepository ;;
