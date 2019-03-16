@@ -195,6 +195,13 @@ function addFileToUnstage() {
 
 # リポジトリをクリーン
 function cleanRepository() {
+  local list=$(git ls-files --others)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
   local yesno=$(whiptail --yesno \
     "${i18n['cleanRepositoryYesNo']}" \
     30 90 \
