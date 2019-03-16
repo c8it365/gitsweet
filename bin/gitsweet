@@ -8,6 +8,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='addFileToStageSelectFiles'
       [cleanRepositoryYesNo]='cleanRepositoryYesNo'
+      [cloneRepositoryInputPath]='cloneRepositoryInputPath'
       [commandGitNotFound]='commandGitNotFound'
       [commandWhiptailNotFound]='commandWhiptailNotFound'
       [commitFileCommitMessage]='commitFileCommitMessage'
@@ -40,7 +41,8 @@ case $LANG in
     i18n=(
       # <autosort>
       [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
-      [cleanRepositoryYesNo]="本当にリポジトリをクリーンしますか？"
+      [cleanRepositoryYesNo]='本当にリポジトリをクリーンしますか？'
+      [cloneRepositoryInputPath]='複製するリポジトリのパスを入力'
       [commandGitNotFound]='コマンドが見つかりません: git'
       [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
       [commitFileCommitMessage]='コミットメッセージを入力'
@@ -51,7 +53,7 @@ case $LANG in
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
       [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
-      [mainMenuGitClone]='リポジトリをクローン (git clone)'
+      [mainMenuGitClone]='リポジトリを複製 (git clone)'
       [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
       [mainMenuGitCommitFile]='ファイルをコミット (git commit -m)'
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
@@ -74,6 +76,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='Select file to add to stage'
       [cleanRepositoryYesNo]='Clean repository?'
+      [cloneRepositoryInputPath]='Enter the repository path to clone'
       [commandGitNotFound]='Command not found: git'
       [commandWhiptailNotFound]='Command not found: whiptail'
       [commitFileCommitMessage]='Enter commit message'
@@ -157,6 +160,22 @@ function cleanRepository() {
       "$(git clean -df 2>&1)" \
       30 90
   fi
+}
+
+# リポジトリを複製
+function cloneRepository() {
+  local input=$(whiptail --inputbox \
+    "${i18n['cloneRepositoryInputPath']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  local temp=$(mktemp)
+  local command=$(git clone "$input" . > $temp 2>&1; LANG=C echo -n $?)
+  if [ $command -ne 0 ]; then
+    whiptail --msgbox \
+      "$(cat $temp)" \
+      30 90
+  fi
+  rm $temp
 }
 
 # すべてのファイルをコミット
@@ -362,6 +381,9 @@ function main() {
 
       11 )
         initializeRepository ;;
+
+      12 )
+        cloneRepository ;;
 
       13 )
         isExistGit || continue
