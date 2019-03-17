@@ -123,6 +123,13 @@ function addAllFileToStage() {
 
 # すべてのファイルの追加を取り消す
 function addAllFileToUnstage() {
+  local list=$(git diff --name-only --cached)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
   whiptail --msgbox \
     "$(git reset HEAD 2>&1)" \
     30 90
