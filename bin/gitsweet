@@ -73,7 +73,7 @@ case $LANG in
       [mainMenuGitAddAllFileToUnstage]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
       [mainMenuGitAddFileToUnstage]='ファイルの追加を取り消す (git reset HEAD)'
-      [mainMenuGitCheckoutAllFile]='すべてのファイルの変更を取り消す (git checkout)'
+      [mainMenuGitCheckoutAllFile]='すべてのファイルの変更を取り消す (git checkout -- .)'
       [mainMenuGitCheckoutFile]='ファイルの変更を取り消す (git checkout)'
       [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
       [mainMenuGitClone]='リポジトリを複製 (git clone)'
@@ -118,7 +118,7 @@ case $LANG in
       [mainMenuGitAddAllFileToUnstage]='Add all file to unstage (git reset HEAD)'
       [mainMenuGitAddFileToStage]='Add file to stage (git add)'
       [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
-      [mainMenuGitCheckoutAllFile]='Cancel change of all file (git checkout)'
+      [mainMenuGitCheckoutAllFile]='Cancel change of all file (git checkout -- .)'
       [mainMenuGitCheckoutFile]='Cancel change of file (git checkout)'
       [mainMenuGitCleanRepository]='Clean repository (git clean -df)'
       [mainMenuGitClone]='Clone repository (git clone)'
@@ -250,6 +250,55 @@ function changeWhiptailColors() {
     root=,magenta
     entry=white,magenta
   '
+}
+
+# すべてのファイルの変更を取り消す
+function checkoutAllFile() {
+  local list=$(git ls-files --others --modified --exclude-standard)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  local temp=$(mktemp)
+  local command=$(git checkout -- . > $temp 2>&1; LANG=C echo -n $?)
+  if [ $command -ne 0 ]; then
+    whiptail --msgbox \
+      "$(LANG=C cat $temp)" \
+      30 90
+  fi
+  rm $temp
+}
+
+# ファイルの変更を取り消す
+function checkoutFile() {
+  local i=0
+  local s=65
+  local f
+  local files
+  local list=$(git ls-files --others --modified --exclude-standard)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  for f in $list; do
+    files[i]=$(LANG=C echo -en "\0$(( $s / 64 * 100 + $s % 64 / 8 * 10 + $s % 8 ))")
+    files[i+1]="$f"
+    ((i+=2))
+    ((s++))
+  done
+  local menu=$(whiptail --menu \
+    "${i18n['addFileToUnstageSelectFiles']}" \
+    30 90 20 \
+    "${files[@]}" \
+    2>&1 > /dev/tty)
+  menu=${files[(( index = 2 * ( $( LANG=C printf "%d" "'$menu" ) - 65 ) + 1 ))]}
+  whiptail --msgbox \
+    "$(git checkout -- $menu 2>&1)" \
+    30 90
 }
 
 # リポジトリをクリーン
@@ -524,6 +573,14 @@ function main() {
       9 )
         isExistGit || continue
         addAllFileToUnstage ;;
+
+      10 )
+        isExistGit || continue
+        checkoutFile ;;
+
+      11 )
+        isExistGit || continue
+        checkoutAllFile ;;
 
       13 )
         isExistGit || continue
