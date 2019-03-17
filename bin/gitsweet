@@ -24,6 +24,7 @@ case $LANG in
       [mainMenuEditLastCommit]='mainMenuEditLastCommit'
       [mainMenuExit]='mainMenuExit'
       [mainMenuGitAddAllFileToStage]='mainMenuGitAddAllFileToStage'
+      [mainMenuGitAddAllFileToUnstage]='mainMenuGitAddAllFileToUnstage'
       [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
       [mainMenuGitAddFileToUnstage]='mainMenuGitAddFileToUnstage'
       [mainMenuGitCleanRepository]='mainMenuGitCleanRepository'
@@ -33,7 +34,6 @@ case $LANG in
       [mainMenuGitInitialize]='mainMenuGitInitialize'
       [mainMenuGitPull]='mainMenuGitPull'
       [mainMenuGitPush]='mainMenuGitPush'
-      [mainMenuGitResetAllFile]='mainMenuGitResetAllFile'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
       [mainMenuViewGitLog]='mainMenuViewGitLog'
       [mainMenu]='mainMenu'
@@ -64,6 +64,7 @@ case $LANG in
       [mainMenuEditLastCommit]='前回のコミットを編集'
       [mainMenuExit]='GitSweet を終了する'
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
+      [mainMenuGitAddAllFileToUnstage]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
       [mainMenuGitAddFileToUnstage]='ファイルの追加を取り消す (git reset HEAD)'
       [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
@@ -73,7 +74,6 @@ case $LANG in
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
       [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
       [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
-      [mainMenuGitResetAllFile]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
       [mainMenuViewGitLog]='ログを見る (git log)'
       [mainMenu]='GitSweet | メインメニュー'
@@ -104,6 +104,7 @@ case $LANG in
       [mainMenuEditLastCommit]='Edit last commit'
       [mainMenuExit]='Exit GitSweet'
       [mainMenuGitAddAllFileToStage]='Add all file to stage (git add --all)'
+      [mainMenuGitAddAllFileToUnstage]='Add all file to unstage (git reset HEAD)'
       [mainMenuGitAddFileToStage]='Add file to stage (git add)'
       [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
       [mainMenuGitCleanRepository]='Clean repository (git clean -df)'
@@ -113,7 +114,6 @@ case $LANG in
       [mainMenuGitInitialize]='Create local repository (git init)'
       [mainMenuGitPull]='Pull from remote repository (git pull)'
       [mainMenuGitPush]='Push to remote repository (git push)'
-      [mainMenuGitResetAllFile]='Add all file to unstage (git reset HEAD)'
       [mainMenuShowGitStatus]='Show status (git status)'
       [mainMenuViewGitLog]='View logs (git log)'
       [mainMenu]='GitSweet | Main menu'
@@ -439,7 +439,7 @@ function showMainMenu() {
     6  "${i18n['mainMenuGitPush']}"
     7  "${i18n['mainMenuGitPull']}"
     8  "${i18n['mainMenuGitAddFileToUnstage']}"
-    9  "${i18n['mainMenuGitResetAllFile']}"
+    9  "${i18n['mainMenuGitAddAllFileToUnstage']}"
     10 "${i18n['mainMenuGitCleanRepository']}"
     11 "${i18n['mainMenuGitInitialize']}"
     12 "${i18n['mainMenuGitClone']}"
