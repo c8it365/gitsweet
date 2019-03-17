@@ -18,6 +18,7 @@ case $LANG in
       [editLastCommitMenu]='editLastCommitMenu'
       [editLastCommitMessageNewMessage]='editLastCommitMessageNewMessage'
       [fileNotFound]='fileNotFound'
+      [gitExist]='gitExist'
       [gitNotExist]='gitNotExist'
       [mainMenuEditLastCommit]='mainMenuEditLastCommit'
       [mainMenuExit]='mainMenuExit'
@@ -56,6 +57,7 @@ case $LANG in
       [editLastCommitMenu]='GitSweet | メインメニュー | 前回のコミットを編集'
       [editLastCommitMessageNewMessage]='新しいコミットメッセージを入力'
       [fileNotFound]='ファイルが見つかりません'
+      [gitExist]='".git/" が存在します'
       [gitNotExist]='".git/" が存在しません'
       [mainMenuEditLastCommit]='前回のコミットを編集'
       [mainMenuExit]='GitSweet を終了する'
@@ -94,6 +96,7 @@ case $LANG in
       [editLastCommitMenu]='GitSweet | Main menu | Edit last commit'
       [editLastCommitMessageNewMessage]='Enter new commit message'
       [fileNotFound]='File not found'
+      [gitExist]='".git/" Exist'
       [gitNotExist]='".git/" not exist'
       [mainMenuEditLastCommit]='Edit last commit'
       [mainMenuExit]='Exit GitSweet'
@@ -349,6 +352,16 @@ function isWhiptailCommand() {
   fi
 }
 
+# ディレクトリ ".git/" が存在しなかったら
+function isntExistGit() {
+  if [ -d .git ]; then
+    whiptail --msgbox \
+      "${i18n['gitExist']}" \
+      30 90
+    return 1
+  fi
+}
+
 # リモートリポジトリからプル
 function pullRepository() {
   whiptail --msgbox \
@@ -479,11 +492,11 @@ function main() {
         cleanRepository ;;
 
       11 )
-        isExistGit && continue
+        isntExistGit || continue
         initializeRepository ;;
 
       12 )
-        isExistGit && continue
+        isntExistGit || continue
         cloneRepository ;;
 
       13 )
