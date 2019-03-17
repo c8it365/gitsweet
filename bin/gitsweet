@@ -14,8 +14,12 @@ case $LANG in
       [commandWhiptailNotFound]='commandWhiptailNotFound'
       [commitFileCommitMessage]='commitFileCommitMessage'
       [commitFileSelectFiles]='commitFileSelectFiles'
+      [editLastCommitMenuEditLastCommitMessage]='editLastCommitMenuEditLastCommitMessage'
+      [editLastCommitMenu]='editLastCommitMenu'
+      [editLastCommitMessageNewMessage]='editLastCommitMessageNewMessage'
       [fileNotFound]='fileNotFound'
       [gitNotExist]='gitNotExist'
+      [mainMenuEditLastCommit]='mainMenuEditLastCommit'
       [mainMenuExit]='mainMenuExit'
       [mainMenuGitAddAllFileToStage]='mainMenuGitAddAllFileToStage'
       [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
@@ -27,7 +31,6 @@ case $LANG in
       [mainMenuGitInitialize]='mainMenuGitInitialize'
       [mainMenuGitPull]='mainMenuGitPull'
       [mainMenuGitPush]='mainMenuGitPush'
-      [mainMenuGitRebase]='mainMenuGitRebase'
       [mainMenuGitResetAllFile]='mainMenuGitResetAllFile'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
       [mainMenuViewGitLog]='mainMenuViewGitLog'
@@ -49,8 +52,12 @@ case $LANG in
       [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
       [commitFileCommitMessage]='コミットメッセージを入力'
       [commitFileSelectFiles]='コミットするファイルを選択'
+      [editLastCommitMenuEditLastCommitMessage]='前回のコミットメッセージを編集する (git commit --amend -m)'
+      [editLastCommitMenu]='GitSweet | メインメニュー | 前回のコミットを編集'
+      [editLastCommitMessageNewMessage]='新しいコミットメッセージを入力'
       [fileNotFound]='ファイルが見つかりません'
       [gitNotExist]='".git/" が存在しません'
+      [mainMenuEditLastCommit]='前回のコミットを編集'
       [mainMenuExit]='GitSweet を終了する'
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
@@ -62,7 +69,6 @@ case $LANG in
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
       [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
       [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
-      [mainMenuGitRebase]='前回のコミットを編集 (git rebase -i)'
       [mainMenuGitResetAllFile]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
       [mainMenuViewGitLog]='ログを見る (git log)'
@@ -84,11 +90,16 @@ case $LANG in
       [commandWhiptailNotFound]='Command not found: whiptail'
       [commitFileCommitMessage]='Enter commit message'
       [commitFileSelectFiles]='Select file to commit'
+      [editLastCommitMenuEditLastCommitMessage]='Edit last commit message (git commit --amend -m)'
+      [editLastCommitMenu]='GitSweet | Main menu | Edit last commit'
+      [editLastCommitMessageNewMessage]='Enter new commit message'
       [fileNotFound]='File not found'
       [gitNotExist]='".git/" not exist'
+      [mainMenuEditLastCommit]='Edit last commit'
       [mainMenuExit]='Exit GitSweet'
       [mainMenuGitAddAllFileToStage]='Add all file to stage (git add --all)'
       [mainMenuGitAddFileToStage]='Add file to stage (git add)'
+      [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
       [mainMenuGitCleanRepository]='Clean repository (git clean -df)'
       [mainMenuGitClone]='Clone repository (git clone)'
       [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
@@ -96,9 +107,7 @@ case $LANG in
       [mainMenuGitInitialize]='Create local repository (git init)'
       [mainMenuGitPull]='Pull from remote repository (git pull)'
       [mainMenuGitPush]='Push to remote repository (git push)'
-      [mainMenuGitRebase]='Edit last commit (git rebase -i)'
       [mainMenuGitResetAllFile]='Add all file to unstage (git reset HEAD)'
-      [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
       [mainMenuShowGitStatus]='Show status (git status)'
       [mainMenuViewGitLog]='View logs (git log)'
       [mainMenu]='GitSweet | Main menu'
@@ -247,6 +256,17 @@ function commitAllFile() {
     30 90
 }
 
+# 前回のコミットメッセージを編集する
+function editLastCommitMessage() {
+  local input=$(whiptail --inputbox \
+    "${i18n['editLastCommitMessageNewMessage']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  whiptail --msgbox \
+    "$(git commit --amend -m "$input" 2>&1)" \
+    30 90
+}
+
 # メインメニューから抜ける
 function exitMainMenu() {
   exit
@@ -357,6 +377,19 @@ function removeRepository() {
   fi
 }
 
+# 前回のコミットを編集するメニューを表示
+function showEditLastCommitMenu() {
+  local menulist=(
+    1 "${i18n['editLastCommitMenuEditLastCommitMessage']}"
+  )
+  local menu=$(whiptail --menu \
+    "${i18n['editLastCommitMenu']}" \
+    30 90 20 \
+    "${menulist[@]}" \
+    2>&1 > /dev/tty)
+  LANG=C echo -n $menu
+}
+
 # git status を表示
 function showGitStatus() {
   whiptail --msgbox \
@@ -380,7 +413,7 @@ function showMainMenu() {
     11 "${i18n['mainMenuGitInitialize']}"
     12 "${i18n['mainMenuGitClone']}"
     13 "${i18n['mainMenuremoveRepository']}"
-    14 "${i18n['mainMenuGitRebase']}"
+    14 "${i18n['mainMenuEditLastCommit']}"
     15 "${i18n['mainMenuViewGitLog']}"
     16 "${i18n['mainMenuExit']}"
   )
@@ -456,6 +489,13 @@ function main() {
       13 )
         isExistGit || continue
         removeRepository ;;
+
+      14 )
+        case $(showEditLastCommitMenu) in
+          1 )
+            isExistGit || continue
+            editLastCommitMessage ;;
+        esac ;;
 
       15 )
         isExistGit || continue
