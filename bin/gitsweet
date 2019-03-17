@@ -27,6 +27,8 @@ case $LANG in
       [mainMenuGitAddAllFileToUnstage]='mainMenuGitAddAllFileToUnstage'
       [mainMenuGitAddFileToStage]='mainMenuGitAddFileToStage'
       [mainMenuGitAddFileToUnstage]='mainMenuGitAddFileToUnstage'
+      [mainMenuGitCheckoutAllFile]='mainMenuGitCheckoutAllFile'
+      [mainMenuGitCheckoutFile]='mainMenuGitCheckoutFile'
       [mainMenuGitCleanRepository]='mainMenuGitCleanRepository'
       [mainMenuGitClone]='mainMenuGitClone'
       [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
@@ -34,6 +36,8 @@ case $LANG in
       [mainMenuGitInitialize]='mainMenuGitInitialize'
       [mainMenuGitPull]='mainMenuGitPull'
       [mainMenuGitPush]='mainMenuGitPush'
+      [mainMenuManagementSubmodule]='mainMenuManagementSubmodule'
+      [mainMenuOthers]='mainMenuOthers'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
       [mainMenuViewGitLog]='mainMenuViewGitLog'
       [mainMenu]='mainMenu'
@@ -61,12 +65,14 @@ case $LANG in
       [fileNotFound]='ファイルが見つかりません'
       [gitExist]='".git/" が存在します'
       [gitNotExist]='".git/" が存在しません'
-      [mainMenuEditLastCommit]='前回のコミットを編集'
+      [mainMenuEditLastCommit]='前回のコミットを編集 |>'
       [mainMenuExit]='GitSweet を終了する'
       [mainMenuGitAddAllFileToStage]='すべてのファイルをステージに追加 (git add --all)'
       [mainMenuGitAddAllFileToUnstage]='すべてのファイルの追加を取り消す (git reset HEAD)'
       [mainMenuGitAddFileToStage]='ファイルをステージに追加 (git add)'
       [mainMenuGitAddFileToUnstage]='ファイルの追加を取り消す (git reset HEAD)'
+      [mainMenuGitCheckoutAllFile]='すべてのファイルの変更を取り消す (git checkout)'
+      [mainMenuGitCheckoutFile]='ファイルの変更を取り消す (git checkout)'
       [mainMenuGitCleanRepository]='ローカルリポジトリをクリーン (git clean -df)'
       [mainMenuGitClone]='リポジトリを複製 (git clone)'
       [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
@@ -74,6 +80,8 @@ case $LANG in
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
       [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
       [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
+      [mainMenuManagementSubmodule]='サブモジュールを管理 |>'
+      [mainMenuOthers]='その他 |>'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
       [mainMenuViewGitLog]='ログを見る (git log)'
       [mainMenu]='GitSweet | メインメニュー'
@@ -101,12 +109,14 @@ case $LANG in
       [fileNotFound]='File not found'
       [gitExist]='".git/" Exist'
       [gitNotExist]='".git/" not exist'
-      [mainMenuEditLastCommit]='Edit last commit'
+      [mainMenuEditLastCommit]='Edit last commit |>'
       [mainMenuExit]='Exit GitSweet'
       [mainMenuGitAddAllFileToStage]='Add all file to stage (git add --all)'
       [mainMenuGitAddAllFileToUnstage]='Add all file to unstage (git reset HEAD)'
       [mainMenuGitAddFileToStage]='Add file to stage (git add)'
       [mainMenuGitAddFileToUnstage]='Add file to unstage (git reset HEAD)'
+      [mainMenuGitCheckoutAllFile]='Cancel change of all file (git checkout)'
+      [mainMenuGitCheckoutFile]='Cancel change of file (git checkout)'
       [mainMenuGitCleanRepository]='Clean repository (git clean -df)'
       [mainMenuGitClone]='Clone repository (git clone)'
       [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
@@ -114,6 +124,8 @@ case $LANG in
       [mainMenuGitInitialize]='Create local repository (git init)'
       [mainMenuGitPull]='Pull from remote repository (git pull)'
       [mainMenuGitPush]='Push to remote repository (git push)'
+      [mainMenuManagementSubmodule]='Management submodule |>'
+      [mainMenuOthers]='Others |>'
       [mainMenuShowGitStatus]='Show status (git status)'
       [mainMenuViewGitLog]='View logs (git log)'
       [mainMenu]='GitSweet | Main menu'
@@ -440,13 +452,17 @@ function showMainMenu() {
     7  "${i18n['mainMenuGitPull']}"
     8  "${i18n['mainMenuGitAddFileToUnstage']}"
     9  "${i18n['mainMenuGitAddAllFileToUnstage']}"
-    10 "${i18n['mainMenuGitCleanRepository']}"
-    11 "${i18n['mainMenuGitInitialize']}"
-    12 "${i18n['mainMenuGitClone']}"
-    13 "${i18n['mainMenuremoveRepository']}"
-    14 "${i18n['mainMenuEditLastCommit']}"
-    15 "${i18n['mainMenuViewGitLog']}"
-    16 "${i18n['mainMenuExit']}"
+    10 "${i18n['mainMenuGitCheckoutFile']}"
+    11 "${i18n['mainMenuGitCheckoutAllFile']}"
+    12 "${i18n['mainMenuManagementSubmodule']}"
+    13 "${i18n['mainMenuGitCleanRepository']}"
+    14 "${i18n['mainMenuGitInitialize']}"
+    15 "${i18n['mainMenuGitClone']}"
+    16 "${i18n['mainMenuremoveRepository']}"
+    17 "${i18n['mainMenuOthers']}"
+    18 "${i18n['mainMenuEditLastCommit']}"
+    19 "${i18n['mainMenuViewGitLog']}"
+    20 "${i18n['mainMenuExit']}"
   )
   local menu=$(whiptail --menu \
     "${i18n['mainMenu']}" \
@@ -505,23 +521,23 @@ function main() {
         isExistGit || continue
         addAllFileToUnstage ;;
 
-      10 )
+      13 )
         isExistGit || continue
         cleanRepository ;;
 
-      11 )
+      14 )
         isntExistGit || continue
         initializeRepository ;;
 
-      12 )
+      15 )
         isntExistGit || continue
         cloneRepository ;;
 
-      13 )
+      16 )
         isExistGit || continue
         removeRepository ;;
 
-      14 )
+      18 )
         case $(showEditLastCommitMenu) in
           1 )
             isExistGit || continue
@@ -532,11 +548,11 @@ function main() {
             addAddedFilesToLastCommit ;;
         esac ;;
 
-      15 )
+      19 )
         isExistGit || continue
         viewGitLog ;;
 
-      16 )
+      20 )
         exitMainMenu ;;
     esac
   done
