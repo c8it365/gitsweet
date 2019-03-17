@@ -276,37 +276,13 @@ function commitAllFile() {
     30 90
 }
 
-# 前回のコミットメッセージを編集する
-function editLastCommitMessage() {
-  local input=$(whiptail --inputbox \
-    "${i18n['editLastCommitMessageNewMessage']}" \
-    30 90 \
-    2>&1 > /dev/tty)
-  whiptail --msgbox \
-    "$(git commit --amend -m "$input" 2>&1)" \
-    30 90
-}
-
-# メインメニューから抜ける
-function exitMainMenu() {
-  exit
-}
-
-# whiptail の色を変更
-function changeWhiptailColors() {
-  export NEWT_COLORS='
-    root=,magenta
-    entry=white,magenta
-  '
-}
-
 # ファイルをコミット
 function commitFile() {
   local i=0
   local s=65
   local f
   local files
-  local list=$(git ls-files --cached)
+  local list=$(git diff --name-only --cached)
   if [ -z "$list" ]; then
     whiptail --msgbox \
       "${i18n['fileNotFound']}" \
@@ -332,6 +308,30 @@ function commitFile() {
   whiptail --msgbox \
     "$(git commit -m "$input" -- $menu 2>&1)" \
     30 90
+}
+
+# 前回のコミットメッセージを編集する
+function editLastCommitMessage() {
+  local input=$(whiptail --inputbox \
+    "${i18n['editLastCommitMessageNewMessage']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  whiptail --msgbox \
+    "$(git commit --amend -m "$input" 2>&1)" \
+    30 90
+}
+
+# メインメニューから抜ける
+function exitMainMenu() {
+  exit
+}
+
+# whiptail の色を変更
+function changeWhiptailColors() {
+  export NEWT_COLORS='
+    root=,magenta
+    entry=white,magenta
+  '
 }
 
 # ローカルリポジトリを作成
