@@ -37,12 +37,16 @@ case $LANG in
       [mainMenuGitInitialize]='mainMenuGitInitialize'
       [mainMenuGitPull]='mainMenuGitPull'
       [mainMenuGitPush]='mainMenuGitPush'
-      [mainMenuManagementSubmodule]='mainMenuManagementSubmodule'
+      [mainMenuManageSubmodule]='mainMenuManageSubmodule'
       [mainMenuOthers]='mainMenuOthers'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
       [mainMenuViewGitLog]='mainMenuViewGitLog'
       [mainMenu]='mainMenu'
       [mainMenuremoveRepository]='mainMenuremoveRepository'
+      [manageSubmoduleMenuAddSubmodule]='manageSubmoduleMenuAddSubmodule'
+      [manageSubmoduleMenu]='manageSubmoduleMenu'
+      [othersGitForcedPush]='othersGitForcedPush'
+      [others]='others'
       [removeRepositorySuccess]='removeRepositorySuccess'
       [removeRepositoryYesNo]='removeRepositoryYesNo'
       # </autosort>
@@ -82,12 +86,16 @@ case $LANG in
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
       [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
       [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
-      [mainMenuManagementSubmodule]='サブモジュールを管理 |>'
+      [mainMenuManageSubmodule]='サブモジュールを管理 |>'
       [mainMenuOthers]='その他 |>'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
       [mainMenuViewGitLog]='ログを見る (git log)'
       [mainMenu]='GitSweet | メインメニュー'
       [mainMenuremoveRepository]='ローカルリポジトリを削除 (rm -rf .git/)'
+      [manageSubmoduleMenuAddSubmodule]='サブモジュールを追加 (git submodule add)'
+      [manageSubmoduleMenu]='GitSweet | メインメニュー | サブモジュールを管理'
+      [othersGitForcedPush]='リモートリポジトリに強制プッシュ (git push --force-with-lease)'
+      [others]='GitSweet | メインメニュー | その他'
       [removeRepositorySuccess]='リポジトリを削除しました'
       [removeRepositoryYesNo]='本当にリポジトリを削除しますか？'
       # </autosort>
@@ -127,12 +135,16 @@ case $LANG in
       [mainMenuGitInitialize]='Create local repository (git init)'
       [mainMenuGitPull]='Pull from remote repository (git pull)'
       [mainMenuGitPush]='Push to remote repository (git push)'
-      [mainMenuManagementSubmodule]='Management submodule |>'
+      [mainMenuManageSubmodule]='Manage submodule |>'
       [mainMenuOthers]='Others |>'
       [mainMenuShowGitStatus]='Show status (git status)'
       [mainMenuViewGitLog]='View logs (git log)'
       [mainMenu]='GitSweet | Main menu'
       [mainMenuremoveRepository]='Remove local repository (rm -rf .git/)'
+      [manageSubmoduleMenuAddSubmodule]='Add submodule (git submodule add)'
+      [manageSubmoduleMenu]='GitSweet | Main menu | Manage submodule'
+      [othersGitForcedPush]='Forced push to remote repository (git push --force-with-lease)'
+      [others]='GitSweet | Main menu | Others'
       [removeRepositorySuccess]='Removed repository'
       [removeRepositoryYesNo]='Want to remove repository?'
       # </autosort>
@@ -507,7 +519,7 @@ function showMainMenu() {
     9  "${i18n['mainMenuGitAddAllFileToUnstage']}"
     10 "${i18n['mainMenuGitCheckoutFile']}"
     11 "${i18n['mainMenuGitCheckoutAllFile']}"
-    12 "${i18n['mainMenuManagementSubmodule']}"
+    12 "${i18n['mainMenuManageSubmodule']}"
     13 "${i18n['mainMenuGitCleanRepository']}"
     14 "${i18n['mainMenuGitInitialize']}"
     15 "${i18n['mainMenuGitClone']}"
@@ -519,6 +531,34 @@ function showMainMenu() {
   )
   local menu=$(whiptail --menu --nocancel \
     "${i18n['mainMenu']}" \
+    30 90 20 \
+    "${menulist[@]}" \
+    2>&1 > /dev/tty)
+  LANG=C echo -n $menu
+}
+
+# サブモジュール管理メニューを表示
+function showManageSubmoduleMenu() {
+  local menulist=(
+    1 "${i18n['manageSubmoduleMenuAddSubmodule']}"
+    2 "${i18n['backToMainMenu']}"
+  )
+  local menu=$(whiptail --menu --nocancel \
+    "${i18n['manageSubmoduleMenu']}" \
+    30 90 20 \
+    "${menulist[@]}" \
+    2>&1 > /dev/tty)
+  LANG=C echo -n $menu
+}
+
+# その他を表示
+function showOthers() {
+  local menulist=(
+    1 "${i18n['othersGitForcedPush']}"
+    2 "${i18n['backToMainMenu']}"
+  )
+  local menu=$(whiptail --menu --nocancel \
+    "${i18n['others']}" \
     30 90 20 \
     "${menulist[@]}" \
     2>&1 > /dev/tty)
@@ -582,6 +622,9 @@ function main() {
         isExistGit || continue
         checkoutAllFile ;;
 
+      12 )
+        showManageSubmoduleMenu ;;
+
       13 )
         isExistGit || continue
         cleanRepository ;;
@@ -597,6 +640,9 @@ function main() {
       16 )
         isExistGit || continue
         removeRepository ;;
+
+      17 )
+        showOthers ;;
 
       18 )
         case $(showEditLastCommitMenu) in
