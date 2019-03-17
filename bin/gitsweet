@@ -8,6 +8,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='addFileToStageSelectFiles'
       [addFileToUnstageSelectFiles]='addFileToUnstageSelectFiles'
+      [backToMainMenu]='backToMainMenu'
       [cleanRepositoryYesNo]='cleanRepositoryYesNo'
       [cloneRepositoryInputPath]='cloneRepositoryInputPath'
       [commandGitNotFound]='commandGitNotFound'
@@ -52,6 +53,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
       [addFileToUnstageSelectFiles]='追加を取り消すファイルを選択'
+      [backToMainMenu]='メインメニューに戻る'
       [cleanRepositoryYesNo]='本当にリポジトリをクリーンしますか？'
       [cloneRepositoryInputPath]='複製するリポジトリのパスを入力'
       [commandGitNotFound]='コマンドが見つかりません: git'
@@ -96,6 +98,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='Select file to add to stage'
       [addFileToUnstageSelectFiles]='Select file to add to unstage'
+      [backToMainMenu]='Back to main menu'
       [cleanRepositoryYesNo]='Clean repository?'
       [cloneRepositoryInputPath]='Enter the repository path to clone'
       [commandGitNotFound]='Command not found: git'
@@ -424,8 +427,9 @@ function showEditLastCommitMenu() {
   local menulist=(
     1 "${i18n['editLastCommitMenuEditLastCommitMessage']}"
     2 "${i18n['editLastCommitMenuAddAddedFilesToLastCommit']}"
+    3 "${i18n['backToMainMenu']}"
   )
-  local menu=$(whiptail --menu \
+  local menu=$(whiptail --menu --nocancel \
     "${i18n['editLastCommitMenu']}" \
     30 90 20 \
     "${menulist[@]}" \
@@ -464,7 +468,7 @@ function showMainMenu() {
     19 "${i18n['mainMenuViewGitLog']}"
     20 "${i18n['mainMenuExit']}"
   )
-  local menu=$(whiptail --menu \
+  local menu=$(whiptail --menu --nocancel \
     "${i18n['mainMenu']}" \
     30 90 20 \
     "${menulist[@]}" \
