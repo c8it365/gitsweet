@@ -244,6 +244,14 @@ function addFileToUnstage() {
     30 90
 }
 
+# whiptail の色を変更
+function changeWhiptailColors() {
+  export NEWT_COLORS='
+    root=,magenta
+    entry=white,magenta
+  '
+}
+
 # リポジトリをクリーン
 function cleanRepository() {
   local list=$(git ls-files --others)
@@ -339,14 +347,6 @@ function editLastCommitMessage() {
 # メインメニューから抜ける
 function exitMainMenu() {
   exit
-}
-
-# whiptail の色を変更
-function changeWhiptailColors() {
-  export NEWT_COLORS='
-    root=,magenta
-    entry=white,magenta
-  '
 }
 
 # ローカルリポジトリを作成
