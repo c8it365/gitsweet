@@ -14,6 +14,7 @@ case $LANG in
       [commandWhiptailNotFound]='commandWhiptailNotFound'
       [commitFileCommitMessage]='commitFileCommitMessage'
       [commitFileSelectFiles]='commitFileSelectFiles'
+      [editLastCommitMenuAddAddedFilesToLastCommit]='editLastCommitMenuAddAddedFilesToLastCommit'
       [editLastCommitMenuEditLastCommitMessage]='editLastCommitMenuEditLastCommitMessage'
       [editLastCommitMenu]='editLastCommitMenu'
       [editLastCommitMessageNewMessage]='editLastCommitMessageNewMessage'
@@ -53,6 +54,7 @@ case $LANG in
       [commandWhiptailNotFound]='コマンドが見つかりません: whiptail'
       [commitFileCommitMessage]='コミットメッセージを入力'
       [commitFileSelectFiles]='コミットするファイルを選択'
+      [editLastCommitMenuAddAddedFilesToLastCommit]='追加されたファイルを前回のコミットに追加 (git commit --amend --no-edit)'
       [editLastCommitMenuEditLastCommitMessage]='前回のコミットメッセージを編集する (git commit --amend -m)'
       [editLastCommitMenu]='GitSweet | メインメニュー | 前回のコミットを編集'
       [editLastCommitMessageNewMessage]='新しいコミットメッセージを入力'
@@ -92,6 +94,7 @@ case $LANG in
       [commandWhiptailNotFound]='Command not found: whiptail'
       [commitFileCommitMessage]='Enter commit message'
       [commitFileSelectFiles]='Select file to commit'
+      [editLastCommitMenuAddAddedFilesToLastCommit]='Add added files to last commit (git commit --amend --no-edit)'
       [editLastCommitMenuEditLastCommitMessage]='Edit last commit message (git commit --amend -m)'
       [editLastCommitMenu]='GitSweet | Main menu | Edit last commit'
       [editLastCommitMessageNewMessage]='Enter new commit message'
@@ -144,6 +147,20 @@ function addAllFileToUnstage() {
   fi
   whiptail --msgbox \
     "$(git reset HEAD 2>&1)" \
+    30 90
+}
+
+# 追加されたファイルを前回のコミットに追加
+function addAddedFilesToLastCommit() {
+  local list=$(git diff --name-only --cached)
+  if [ -z "$list" ]; then
+    whiptail --msgbox \
+      "${i18n['fileNotFound']}" \
+      30 90
+    return
+  fi
+  whiptail --msgbox \
+    "$(git commit --amend --no-edit)" \
     30 90
 }
 
@@ -394,6 +411,7 @@ function removeRepository() {
 function showEditLastCommitMenu() {
   local menulist=(
     1 "${i18n['editLastCommitMenuEditLastCommitMessage']}"
+    2 "${i18n['editLastCommitMenuAddAddedFilesToLastCommit']}"
   )
   local menu=$(whiptail --menu \
     "${i18n['editLastCommitMenu']}" \
@@ -508,6 +526,10 @@ function main() {
           1 )
             isExistGit || continue
             editLastCommitMessage ;;
+
+          2 )
+            isExistGit || continue
+            addAddedFilesToLastCommit ;;
         esac ;;
 
       15 )
