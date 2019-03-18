@@ -410,6 +410,13 @@ function exitMainMenu() {
   exit
 }
 
+# リモートリポジトリに強制プッシュ
+function forcedPushRepository() {
+  whiptail --msgbox \
+    "$(git push --force-with-lease 2>&1)" \
+    30 90
+}
+
 # ローカルリポジトリを作成
 function initializeRepository() {
   whiptail --msgbox \
@@ -642,7 +649,11 @@ function main() {
         removeRepository ;;
 
       17 )
-        showOthers ;;
+        case $(showOthers) in
+          1 )
+            isExistGit || continue
+            forcedPushRepository
+        esac ;;
 
       18 )
         case $(showEditLastCommitMenu) in
