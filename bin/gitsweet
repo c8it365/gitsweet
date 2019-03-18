@@ -35,8 +35,8 @@ case $LANG in
       [mainMenuGitCommitAllFile]='mainMenuGitCommitAllFile'
       [mainMenuGitCommitFile]='mainMenuGitCommitFile'
       [mainMenuGitInitialize]='mainMenuGitInitialize'
-      [mainMenuGitPull]='mainMenuGitPull'
-      [mainMenuGitPush]='mainMenuGitPush'
+      [mainMenuGitPullRepository]='mainMenuGitPullRepository'
+      [mainMenuGitPushRepository]='mainMenuGitPushRepository'
       [mainMenuManageSubmodule]='mainMenuManageSubmodule'
       [mainMenuOthers]='mainMenuOthers'
       [mainMenuShowGitStatus]='mainMenuShowGitStatus'
@@ -45,7 +45,7 @@ case $LANG in
       [mainMenuremoveRepository]='mainMenuremoveRepository'
       [manageSubmoduleMenuAddSubmodule]='manageSubmoduleMenuAddSubmodule'
       [manageSubmoduleMenu]='manageSubmoduleMenu'
-      [othersGitForcedPush]='othersGitForcedPush'
+      [othersGitForcedPushRepository]='othersGitForcedPushRepository'
       [others]='others'
       [removeRepositorySuccess]='removeRepositorySuccess'
       [removeRepositoryYesNo]='removeRepositoryYesNo'
@@ -84,8 +84,8 @@ case $LANG in
       [mainMenuGitCommitAllFile]='すべてのファイルをコミット (git commit -m)'
       [mainMenuGitCommitFile]='ファイルをコミット (git commit -m)'
       [mainMenuGitInitialize]='ローカルリポジトリを作成 (git init)'
-      [mainMenuGitPull]='リモートリポジトリからプル (git pull)'
-      [mainMenuGitPush]='リモートリポジトリにプッシュ (git push)'
+      [mainMenuGitPullRepository]='リモートリポジトリからプル (git pull)'
+      [mainMenuGitPushRepository]='リモートリポジトリにプッシュ (git push)'
       [mainMenuManageSubmodule]='サブモジュールを管理 |>'
       [mainMenuOthers]='その他 |>'
       [mainMenuShowGitStatus]='ステータスを表示 (git status)'
@@ -94,7 +94,7 @@ case $LANG in
       [mainMenuremoveRepository]='ローカルリポジトリを削除 (rm -rf .git/)'
       [manageSubmoduleMenuAddSubmodule]='サブモジュールを追加 (git submodule add)'
       [manageSubmoduleMenu]='GitSweet | メインメニュー | サブモジュールを管理'
-      [othersGitForcedPush]='リモートリポジトリに強制プッシュ (git push --force-with-lease)'
+      [othersGitForcedPushRepository]='リモートリポジトリに強制プッシュ (git push --force-with-lease)'
       [others]='GitSweet | メインメニュー | その他'
       [removeRepositorySuccess]='リポジトリを削除しました'
       [removeRepositoryYesNo]='本当にリポジトリを削除しますか？'
@@ -133,8 +133,8 @@ case $LANG in
       [mainMenuGitCommitAllFile]='Commit all file (git commit -m)'
       [mainMenuGitCommitFile]='Commit file (git commit -m)'
       [mainMenuGitInitialize]='Create local repository (git init)'
-      [mainMenuGitPull]='Pull from remote repository (git pull)'
-      [mainMenuGitPush]='Push to remote repository (git push)'
+      [mainMenuGitPullRepository]='PullRepository from remote repository (git pull)'
+      [mainMenuGitPushRepository]='PushRepository to remote repository (git push)'
       [mainMenuManageSubmodule]='Manage submodule |>'
       [mainMenuOthers]='Others |>'
       [mainMenuShowGitStatus]='Show status (git status)'
@@ -143,7 +143,7 @@ case $LANG in
       [mainMenuremoveRepository]='Remove local repository (rm -rf .git/)'
       [manageSubmoduleMenuAddSubmodule]='Add submodule (git submodule add)'
       [manageSubmoduleMenu]='GitSweet | Main menu | Manage submodule'
-      [othersGitForcedPush]='Forced push to remote repository (git push --force-with-lease)'
+      [othersGitForcedPushRepository]='Forced push to remote repository (git push --force-with-lease)'
       [others]='GitSweet | Main menu | Others'
       [removeRepositorySuccess]='Removed repository'
       [removeRepositoryYesNo]='Want to remove repository?'
@@ -513,8 +513,8 @@ function showMainMenu() {
     3  "${i18n['mainMenuGitAddAllFileToStage']}"
     4  "${i18n['mainMenuGitCommitFile']}"
     5  "${i18n['mainMenuGitCommitAllFile']}"
-    6  "${i18n['mainMenuGitPush']}"
-    7  "${i18n['mainMenuGitPull']}"
+    6  "${i18n['mainMenuGitPushRepository']}"
+    7  "${i18n['mainMenuGitPullRepository']}"
     8  "${i18n['mainMenuGitAddFileToUnstage']}"
     9  "${i18n['mainMenuGitAddAllFileToUnstage']}"
     10 "${i18n['mainMenuGitCheckoutFile']}"
@@ -554,7 +554,7 @@ function showManageSubmoduleMenu() {
 # その他を表示
 function showOthers() {
   local menulist=(
-    1 "${i18n['othersGitForcedPush']}"
+    1 "${i18n['othersGitForcedPushRepository']}"
     2 "${i18n['backToMainMenu']}"
   )
   local menu=$(whiptail --menu --nocancel \
