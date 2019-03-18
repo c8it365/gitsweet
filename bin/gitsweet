@@ -8,6 +8,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='addFileToStageSelectFiles'
       [addFileToUnstageSelectFiles]='addFileToUnstageSelectFiles'
+      [addSubmoduleInputPath]='addSubmoduleInputPath'
       [backToMainMenu]='backToMainMenu'
       [cleanRepositoryYesNo]='cleanRepositoryYesNo'
       [cloneRepositoryInputPath]='cloneRepositoryInputPath'
@@ -57,6 +58,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='ステージに追加するファイルを選択'
       [addFileToUnstageSelectFiles]='追加を取り消すファイルを選択'
+      [addSubmoduleInputPath]='追加するサブモジュールのパスを入力'
       [backToMainMenu]='メインメニューに戻る'
       [cleanRepositoryYesNo]='本当にリポジトリをクリーンしますか？'
       [cloneRepositoryInputPath]='複製するリポジトリのパスを入力'
@@ -106,6 +108,7 @@ case $LANG in
       # <autosort>
       [addFileToStageSelectFiles]='Select file to add to stage'
       [addFileToUnstageSelectFiles]='Select file to add to unstage'
+      [addSubmoduleInputPath]='Enter the submodule path to add'
       [backToMainMenu]='Back to main menu'
       [cleanRepositoryYesNo]='Clean repository?'
       [cloneRepositoryInputPath]='Enter the repository path to clone'
@@ -254,6 +257,22 @@ function addFileToUnstage() {
   whiptail --msgbox \
     "$(git reset HEAD $menu 2>&1)" \
     30 90
+}
+
+# サブモジュールを追加
+function addSubmodule() {
+  local input=$(whiptail --inputbox \
+    "${i18n['addSubmoduleInputPath']}" \
+    30 90 \
+    2>&1 > /dev/tty)
+  local temp=$(mktemp)
+  local command=$(git submodule add "$input" > $temp 2>&1; LANG=C echo -n $?)
+  if [ $command -ne 0 ]; then
+    whiptail --msgbox \
+      "$(LANG=C cat $temp)" \
+      30 90
+  fi
+  rm $temp
 }
 
 # whiptail の色を変更
@@ -630,7 +649,11 @@ function main() {
         checkoutAllFile ;;
 
       12 )
-        showManageSubmoduleMenu ;;
+        case $(showManageSubmoduleMenu) in
+          1 )
+            isExistGit || continue
+            addSubmodule ;;
+        esac ;;
 
       13 )
         isExistGit || continue
